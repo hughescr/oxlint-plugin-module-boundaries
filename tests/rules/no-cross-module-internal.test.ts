@@ -158,6 +158,92 @@ export function publicFn(): string { return 'x'; }
         expect(isExportInternal(src, 'publicFn')).toBe(false);
     });
 
+    it('returns true for an @internal variable declaration', () => {
+        const src = parseSource(`
+/** @internal */
+export const internalConst = 42;
+        `);
+        expect(isExportInternal(src, 'internalConst')).toBe(true);
+    });
+
+    it('returns false for a public variable declaration', () => {
+        const src = parseSource(`
+export const publicConst = 42;
+        `);
+        expect(isExportInternal(src, 'publicConst')).toBe(false);
+    });
+
+    it('returns false when looking up a name that does not exist in the file', () => {
+        const src = parseSource(`
+/** @internal */
+export function internalFn(): string { return 'x'; }
+        `);
+        expect(isExportInternal(src, 'nonExistentName')).toBe(false);
+    });
+
+    it('returns true for @internal class declaration', () => {
+        const src = parseSource(`
+/** @internal */
+export class InternalClass {}
+        `);
+        expect(isExportInternal(src, 'InternalClass')).toBe(true);
+    });
+
+    it('returns true for a multi-modifier @internal declaration (export declare)', () => {
+        const src = parseSource(`
+/** @internal */
+export declare function internalDeclared(): void;
+        `);
+        expect(isExportInternal(src, 'internalDeclared')).toBe(true);
+    });
+
+    it('returns false for a public declaration when looking up one of multiple exported names', () => {
+        const src = parseSource(`
+/** @internal */
+export function a(): void {}
+export function b(): void {}
+        `);
+        expect(isExportInternal(src, 'b')).toBe(false);
+    });
+
+    it('returns true for @internal export default expression (ExportAssignment)', () => {
+        const src = parseSource(`
+/** @internal */
+export default 42;
+        `);
+        expect(isExportInternal(src, 'default')).toBe(true);
+    });
+
+    it('returns false for public export default expression', () => {
+        const src = parseSource(`
+export default 42;
+        `);
+        expect(isExportInternal(src, 'default')).toBe(false);
+    });
+
+    it('returns true for @internal export default class', () => {
+        const src = parseSource(`
+/** @internal */
+export default class Foo {}
+        `);
+        expect(isExportInternal(src, 'default')).toBe(true);
+    });
+
+    it('returns true for @internal export default function', () => {
+        const src = parseSource(`
+/** @internal */
+export default function foo() {}
+        `);
+        expect(isExportInternal(src, 'default')).toBe(true);
+    });
+
+    it('returns false when searching for "default" in a file with no default export', () => {
+        const src = parseSource(`
+export function publicFn(): string { return 'x'; }
+        `);
+        expect(isExportInternal(src, 'default')).toBe(false);
+    });
+
     // ── Core regression: re-export with alias ─────────────────────────────────
     //
     // Source:   /** @internal */ export { internalFn as publicAlias } from './deeper'

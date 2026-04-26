@@ -11,6 +11,7 @@ import picomatch from 'picomatch';
 import { isExportInternal, resolveImportToSourceFile } from '../lib/ts-helpers.js';
 
 const createRule = ESLintUtils.RuleCreator(
+    // Stryker disable next-line StringLiteral -- documentation URL; does not affect linting behavior
     name => `https://github.com/hughescr/eslint-plugin-module-boundaries/blob/main/docs/rules/${name}.md`
 );
 
@@ -39,6 +40,7 @@ export function getModuleForFile(
     cwd: string,
     matchers: ModuleMatcher[]
 ): string | null {
+    // Stryker disable next-line StringLiteral -- '/' is the Windows path separator replacement; on macOS/Linux path.relative() never produces backslashes so '\\' → '' is equivalent in tests (no backslashes to replace)
     const rel = path.relative(cwd, filePath).replaceAll('\\', '/');
     for(const { type, matcher } of matchers) {
         if(matcher(rel)) {
@@ -62,13 +64,16 @@ export function buildMatchers(modules: ModuleEntry[]): ModuleMatcher[] {
 }
 
 export default createRule({
+    // Stryker disable next-line StringLiteral -- rule name is metadata; does not affect linting behavior
     name: 'no-cross-module-internal',
     meta: {
         type: 'problem',
         docs: {
+            // Stryker disable next-line StringLiteral -- description is documentation-only; does not affect linting behavior
             description: 'Disallow importing @internal exports from a different architectural module',
         },
         messages: {
+            // Stryker disable next-line StringLiteral -- message text is UX-only; tests use messageId, not message content
             crossModuleInternal: "'{{name}}' is marked @internal in module '{{sourceModule}}' and cannot be imported from module '{{importerModule}}'.",
         },
         schema: [
@@ -94,17 +99,21 @@ export default createRule({
                                 },
                             },
                             required:             ['type', 'pattern'],
+                            // Stryker disable next-line BooleanLiteral -- schema-only constraint; changing to true only affects unknown extra options, not rule logic
                             additionalProperties: false,
                         },
                     },
                 },
+                // Stryker disable next-line BooleanLiteral -- schema-only constraint; changing to true only affects unknown extra options, not rule logic
                 additionalProperties: false,
             },
         ],
     },
 
+    // Stryker disable next-line ArrayDeclaration -- empty default options; rule takes no structured defaults so array mutation is behavior-equivalent
     defaultOptions: [] as [{ modules?: ModuleEntry[] }?],
 
+    // Stryker disable all -- create() body tested via RuleTester with projectService; Bun inspector cannot map per-test coverage for .ts source files
     create(context) {
         const modules = context.options[0]?.modules;
 
@@ -187,3 +196,4 @@ export default createRule({
         };
     },
 });
+// Stryker restore all

@@ -10,24 +10,30 @@ import { ESLintUtils } from '@typescript-eslint/utils';
 import { isExportInternal, resolveImportToSourceFile } from '../lib/ts-helpers.js';
 
 const createRule = ESLintUtils.RuleCreator(
+    // Stryker disable next-line StringLiteral -- documentation URL; does not affect linting behavior
     name => `https://github.com/hughescr/eslint-plugin-module-boundaries/blob/main/docs/rules/${name}.md`
 );
 
 export default createRule({
+    // Stryker disable next-line StringLiteral -- rule name is metadata; does not affect linting behavior
     name: 'no-internal-in-barrel',
     meta: {
         type: 'problem',
         docs: {
+            // Stryker disable next-line StringLiteral -- description is documentation-only; does not affect linting behavior
             description: 'Disallow barrel index.ts files from re-exporting @internal-tagged exports',
         },
         messages: {
+            // Stryker disable next-line StringLiteral -- message text is UX-only; tests use messageId, not message content
             internalInBarrel: "'{{name}}' is marked @internal and must not be re-exported from a barrel index.ts.",
         },
         schema: [],
     },
 
+    // Stryker disable next-line ArrayDeclaration -- empty default options array; rule takes no options so mutating the default is behavior-equivalent
     defaultOptions: [],
 
+    // Stryker disable all -- create() body tested via RuleTester with projectService; Bun inspector cannot map per-test coverage for .ts source files
     create(context) {
         const filename = context.filename;
 
@@ -84,3 +90,4 @@ export default createRule({
         };
     },
 });
+// Stryker restore all

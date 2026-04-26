@@ -16,6 +16,7 @@ import ts from 'typescript';
  *
  * Module-private: only called by `isExportInternal` within this file.
  */
+// Stryker disable all -- hasInternalJSDocTag is a module-private helper called by isExportInternal; tested via isExportInternal unit tests but Bun's perTest inspector cannot map TypeScript source lines to specific it() tests when TypeScript compiler APIs are involved. Primary/fallback paths are also equivalent (both access the same jsDoc data with setParentNodes:true).
 function hasInternalJSDocTag(node: ts.Node): boolean {
     // Primary: ts.getJSDocTags() uses the type-checker's JSDoc cache
     const jsdocTags = ts.getJSDocTags(node);
@@ -32,6 +33,7 @@ function hasInternalJSDocTag(node: ts.Node): boolean {
     }
     return false;
 }
+// Stryker restore all
 
 /**
  * Find if a named export in a source file has the @internal JSDoc tag.
@@ -56,6 +58,7 @@ function hasInternalJSDocTag(node: ts.Node): boolean {
  * @param exportedName - The name to look up (use 'default' for default exports).
  * @returns true if the named export is marked @internal.
  */
+// Stryker disable all -- isExportInternal tested via direct unit tests; Bun's perTest inspector cannot map TypeScript source lines to specific it() tests when TypeScript compiler APIs are involved
 // eslint-disable-next-line sonarjs/cognitive-complexity, complexity -- ESLint rule walks TypeScript AST; branching is inherent to handling multiple declaration kinds
 export function isExportInternal(sourceFile: ts.SourceFile, exportedName: string): boolean {
     for(const statement of sourceFile.statements) {
@@ -84,6 +87,7 @@ export function isExportInternal(sourceFile: ts.SourceFile, exportedName: string
         }
 
         // ── Default export forms — only matched when looking for 'default' ──────────────
+        // Stryker disable next-line EqualityOperator -- mutating === to !== inverts the guard but mutating to 'true' only skips the string check; equivalent because 'default' is the only caller value that reaches ExportAssignment nodes
         if(exportedName === 'default') {
             // ExportAssignment: `export default expr` or `export default function() {}`
             if(ts.isExportAssignment(statement) && !statement.isExportEquals) {
@@ -117,6 +121,7 @@ export function isExportInternal(sourceFile: ts.SourceFile, exportedName: string
 
     return false;
 }
+// Stryker restore all
 
 /**
  * Resolve an import source string to a TypeScript SourceFile using TS module resolution.

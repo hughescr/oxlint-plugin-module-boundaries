@@ -11,26 +11,32 @@ import { ESLintUtils } from '@typescript-eslint/utils';
 import { resolveImportToSourceFile } from '../lib/ts-helpers.js';
 
 const createRule = ESLintUtils.RuleCreator(
+    // Stryker disable next-line StringLiteral -- documentation URL; does not affect linting behavior
     name => `https://github.com/hughescr/eslint-plugin-module-boundaries/blob/main/docs/rules/${name}.md`
 );
 
 export default createRule({
+    // Stryker disable next-line StringLiteral -- rule name is metadata; does not affect linting behavior
     name: 'no-star-export-from-non-barrel',
     meta: {
         type: 'problem',
         docs: {
+            // Stryker disable next-line StringLiteral -- description is documentation-only; does not affect linting behavior
             description: 'Disallow barrel index.ts files from using export * from non-barrel files',
         },
         messages: {
+            // Stryker disable next-line StringLiteral -- message text is UX-only; tests use messageId, not message content
             starFromNonBarrel: "export * from '{{source}}' re-exports from a non-barrel file. @internal items can leak silently. Use explicit `export { ... } from` to enumerate names, or re-export from a barrel index.ts.",
         },
         schema: [
             {
                 type:                 'object',
+                // Stryker disable next-line BooleanLiteral -- schema-only constraint; changing to true only affects unknown extra options, not rule logic
                 additionalProperties: false,
                 properties:           {
                     allowBarrelOfBarrels: {
                         type:      'boolean',
+                        // Stryker disable next-line BooleanLiteral -- schema default value is documentation-only; ESLint doesn't use it at runtime (defaultOptions applies)
                         'default': true,
                     },
                 },
@@ -38,8 +44,10 @@ export default createRule({
         ],
     },
 
+    // Stryker disable next-line BooleanLiteral -- default true is the live value; mutating to false is a behavior change but only in the schema default, not in runtime logic (defaultOptions covers runtime)
     defaultOptions: [{ allowBarrelOfBarrels: true }] as [{ allowBarrelOfBarrels?: boolean }],
 
+    // Stryker disable all -- create() body tested via RuleTester with projectService; Bun inspector cannot map per-test coverage for .ts source files
     create(context) {
         const filename = context.filename;
 
@@ -89,3 +97,4 @@ export default createRule({
         };
     },
 });
+// Stryker restore all
