@@ -1,18 +1,35 @@
 {
   "name": "@hughescr/eslint-plugin-module-boundaries",
-  "version": "0.9.0",
+  "version": "1.0.0",
   "description": "ESLint rules for module boundary enforcement: no cross-module @internal imports, no @internal re-exports in barrels, no star re-exports from non-barrel files",
-  "keywords": ["eslint", "eslintplugin", "eslint-plugin", "typescript", "module-boundaries", "internal", "barrel"],
+  "keywords": [
+    "eslint",
+    "eslintplugin",
+    "eslint-plugin",
+    "typescript",
+    "module-boundaries",
+    "internal",
+    "barrel"
+  ],
   "license": "BSD-3-Clause",
   "author": "Craig Hughes <craig.npm@rungie.com>",
-  "repository": { "type": "git", "url": "git://github.com/hughescr/eslint-plugin-module-boundaries.git" },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/hughescr/eslint-plugin-module-boundaries.git"
+  },
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
-    ".": { "types": "./dist/index.d.ts", "default": "./dist/index.js" }
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
   },
-  "files": ["dist", "docs"],
+  "files": [
+    "dist",
+    "docs"
+  ],
   "sideEffects": false,
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
@@ -31,7 +48,10 @@
     "typecheck": "tsc --noEmit",
     "postversion": "git commit -m \"Bump package version to $npm_package_version\" package.json; git flow release start $npm_package_version; git flow release finish -m $npm_package_version $npm_package_version; git checkout develop; git merge main"
   },
-  "peerDependencies": { "eslint": ">=10.0.0", "typescript": ">=5.0.0" },
+  "peerDependencies": {
+    "eslint": ">=10.0.0",
+    "typescript": ">=5.0.0"
+  },
   "dependencies": {
     "@typescript-eslint/utils": "^8.34.0",
     "picomatch": "^4.0.4"
@@ -53,6 +73,10 @@
     "knip": "^6.6.2",
     "typescript": "^6.0.3"
   },
-  "publishConfig": { "access": "public" },
-  "engines": { "node": ">=20.0.0" }
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
 }
