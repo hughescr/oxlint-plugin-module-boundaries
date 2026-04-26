@@ -1,0 +1,50 @@
+# Dependencies
+node_modules/
+bun.lockb
+
+# Build outputs
+dist/
+build/
+*.tsbuildinfo
+
+# Testing
+coverage/
+*.lcov
+.stryker-tmp/
+stryker.log
+reports/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.eslintcache
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Cache
+.cache/
+.stryker-risk-cache.json
+
+# Claude local config options
+.claude/settings.local.json
+.claude/agent-memory/
+.serena

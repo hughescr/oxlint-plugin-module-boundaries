@@ -1,0 +1,13 @@
+[run]
+silent = true
+
+[test]
+root = "./tests"
+coverage = true
+coverageThreshold = { line = 1.0, function = 1.0, statement = 1.0 }
+coverageReporter = ["text"]
+coverageSkipTestFiles = true
+coveragePathIgnorePatterns = ["tests/**", "dist/**"]
+onlyFailures = true
+timeout = 5
+randomize = true
