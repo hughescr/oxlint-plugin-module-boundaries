@@ -1,0 +1,51 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(bun run mutate:*)",
+      "Bash(ag:*)",
+      "Bash(bun -e:*)",
+      "Bash(bun -p:*)",
+      "Bash(bun lint:*)",
+      "Bash(bun lint:fix:*)",
+      "Bash(bun typecheck:*)",
+      "Bash(bun mutate:*)",
+      "Bash(CI=true bun mutate:*)",
+      "Bash(CI=true bun run mutate:*)",
+      "Bash(bun pm:*)",
+      "Bash(bun run:*)",
+      "Bash(bun test:*)",
+      "Bash(git log:*)",
+      "Bash(git stash:*)",
+      "Bash(jq:*)",
+      "Bash(ls:*)",
+      "Bash(sort:*)",
+      "Bash(test:*)",
+      "Bash(cut:*)",
+      "Bash(echo:*)",
+      "WebFetch(domain:api.anthropic.com)",
+      "WebFetch(domain:api.github.com)",
+      "WebFetch(domain:bun.report)",
+      "WebFetch(domain:registry.npmjs.org)",
+      "mcp__plugin_generic-dev_DevTools__*",
+      "mcp__plugin_javascript_nodejs-packages__*"
+    ]
+  },
+  "sandbox": {
+    "filesystem": {
+      "denyWrite": ["./reports/stryker-incremental.json"]
+    }
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "./tools/protect-config.sh"
+          }
+        ]
+      }
+    ]
+  }
+}
