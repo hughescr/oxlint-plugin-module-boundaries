@@ -1,6 +1,6 @@
 {
   "name": "@hughescr/oxlint-plugin-module-boundaries",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Oxlint JS plugin for module boundaries: one policy file for allowed layer imports, type-only edges and module entry files, plus @internal export rules, with no TypeScript program",
   "keywords": [
     "oxlint",
