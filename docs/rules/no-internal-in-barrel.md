@@ -15,15 +15,19 @@ an `index.ts` file where the original declaration is tagged `@internal`.
 ### How it works
 
 1. The rule applies only to files whose basename is `index.ts`.
-2. For each `export { Foo } from './source'` statement, the rule resolves the
-   source file using TypeScript's module resolution.
-3. For each exported specifier, the rule checks whether the original declaration
-   in the source file has an `@internal` JSDoc tag.
+2. For each `export { Foo } from './source'` statement with a relative source, the
+   rule resolves the source file with oxc-resolver, using TypeScript's `bundler`
+   resolution and the nearest `tsconfig.json` above the barrel.
+3. It parses the source file and checks, for each specifier's original name,
+   whether that export carries an `@internal` JSDoc tag (read as described in
+   [`no-cross-module-internal`](./no-cross-module-internal.md#rule-details)).
 4. If it does, an error is reported on the offending specifier.
 
-Star re-exports (`export * from '...'`) are skipped because the exported names
-cannot be enumerated without full type resolution. Use the
-`no-star-export-from-non-barrel` rule to prevent those entirely.
+Star re-exports (`export * from '...'`) are skipped because the rule does not
+enumerate the names they carry. Use the `no-star-export-from-non-barrel` rule to
+prevent those entirely. Sources that do not resolve are skipped.
+
+The rule takes no policy; enable it by name.
 
 ## Examples
 
@@ -44,6 +48,12 @@ export { internalHelper } from './storage'; // ERROR: internalHelper is @interna
 // src/storage/index.ts
 export { publicHelper } from './storage'; // fine — publicHelper is not @internal
 ```
+
+## Messages
+
+| Message id         | Example |
+|--------------------|---------|
+| `internalInBarrel` | `'hidden' is marked @internal and must not be re-exported from a barrel index.ts.` |
 
 ## Options
 

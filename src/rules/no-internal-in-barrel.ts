@@ -1,94 +1,61 @@
 /**
- * ESLint rule: no-internal-in-barrel
- *
- * Prevents barrel index.ts files from re-exporting @internal-tagged exports.
- * Uses TypeScript's AST and JSDoc parsing to check for @internal tags.
+ * Rule: no-internal-in-barrel. Disallows barrel index.ts files from re-exporting `@internal` exports.
  */
 
 import path from 'node:path';
-import { ESLintUtils } from '@typescript-eslint/utils';
-import { isExportInternal, resolveImportToSourceFile } from '../lib/ts-helpers.js';
+import { nameText, type ExportNamedDeclaration } from '../core/ast.js';
+import type { BoundaryHost } from '../io/host.js';
+import { nodeHost } from '../io/node.js';
+import { docsUrl, type RuleModule } from './rule.js';
 
-const createRule = ESLintUtils.RuleCreator(
-    // Stryker disable next-line StringLiteral -- documentation URL; does not affect linting behavior
-    name => `https://github.com/hughescr/eslint-plugin-module-boundaries/blob/main/docs/rules/${name}.md`
-);
-
-export default createRule({
-    // Stryker disable next-line StringLiteral -- rule name is metadata; does not affect linting behavior
-    name: 'no-internal-in-barrel',
-    meta: {
-        type: 'problem',
-        docs: {
-            // Stryker disable next-line StringLiteral -- description is documentation-only; does not affect linting behavior
-            description: 'Disallow barrel index.ts files from re-exporting @internal-tagged exports',
-        },
-        messages: {
-            // Stryker disable next-line StringLiteral -- message text is UX-only; tests use messageId, not message content
-            internalInBarrel: "'{{name}}' is marked @internal and must not be re-exported from a barrel index.ts.",
-        },
-        schema: [],
-    },
-
-    // Stryker disable next-line ArrayDeclaration -- empty default options array; rule takes no options so mutating the default is behavior-equivalent
-    // eslint-disable-next-line typescript/no-deprecated -- retain RuleCreator defaults until the separate rule API migration; this task changes only the toolchain
-    defaultOptions: [],
-
-    // Stryker disable all -- create() body tested via RuleTester with projectService; Bun inspector cannot map per-test coverage for .ts source files
-    create(context) {
-        const filename = context.filename;
-
-        // Only apply to barrel files: any index.ts
-        // (Scope restriction to src/**/*.ts is enforced by the consumer's eslint.config.mjs)
-        if(path.basename(filename) !== 'index.ts') {
-            return {};
-        }
-
-        // Require TypeScript program for type-aware resolution
-        const parserServices = context.sourceCode.parserServices;
-        if(!parserServices?.program) {
-            return {};
-        }
-
-        const program = parserServices.program;
-        const compilerOptions = program.getCompilerOptions();
-
-        return {
-            ExportNamedDeclaration(node) {
-                // Only handle re-exports with a source: export { Foo } from './module'
-                if(!node.source) {
-                    return;
-                }
-
-                const importSource = node.source.value;
-
-                // Only check relative imports — skip external packages
-                if(!importSource.startsWith('.')) {
-                    return;
-                }
-
-                // Resolve to source file
-                const sourceFile = resolveImportToSourceFile(importSource, filename, program, compilerOptions);
-                if(!sourceFile) {
-                    return;
-                }
-
-                // Check each exported specifier
-                for(const specifier of node.specifiers) {
-                    // The exported name the caller uses is specifier.exported.name
-                    // The original name in the source is specifier.local.name
-                    const originalName = 'name' in specifier.local ? specifier.local.name : String(specifier.local.value);
-
-                    if(isExportInternal(sourceFile, originalName)) {
-                        context.report({
-                            node:      specifier,
-                            messageId: 'internalInBarrel',
-                            data:      { name: originalName },
-                        });
-                    }
-                }
+/**
+ * Build the rule over a host.
+ *
+ * @param host - Resolves imports with the nearest tsconfig.json and reads `@internal` exports.
+ * @returns The rule.
+ */
+export function createNoInternalInBarrelRule(host: BoundaryHost): RuleModule {
+    return {
+        meta: {
+            type: 'problem',
+            docs: {
+                description: 'Disallow barrel index.ts files from re-exporting @internal-tagged exports',
+                url:         docsUrl('no-internal-in-barrel'),
             },
-        };
-    },
-});
-// Stryker restore all
+            messages: {
+                internalInBarrel: "'{{name}}' is marked @internal and must not be re-exported from a barrel index.ts.",
+            },
+            schema: [],
+        },
+        create(context) {
+            host.beginRule();
+            if(path.basename(context.filename) !== 'index.ts') {
+                return {};
+            }
+            return {
+                ExportNamedDeclaration(node: ExportNamedDeclaration) {
+                    if(node.source === null) {
+                        return;
+                    }
+                    const source = String(node.source.value);
+                    if(!source.startsWith('.')) {
+                        return;
+                    }
+                    const resolved = host.resolve(context.filename, source, null);
+                    if(resolved === undefined) {
+                        return;
+                    }
+                    const internal = host.internalExports(resolved);
+                    for(const specifier of node.specifiers) {
+                        const name = nameText(specifier.local);
+                        if(internal.has(name)) {
+                            context.report({ node: specifier, messageId: 'internalInBarrel', data: { name } });
+                        }
+                    }
+                },
+            };
+        },
+    };
+}
+
+export default createNoInternalInBarrelRule(nodeHost);

@@ -9,6 +9,8 @@ export default defineConfig<OxlintConfig>({
     rules:          {
         // Bun builtins are not resolvable by the Node import resolver.
         'n-js/no-missing-import': 'off',
+        // Lint rules run synchronously (Oxlint has no async rule API), so resolving, reading and parsing are sync.
+        'node/no-sync':           'off',
         'import-x-js/order':      ['warn', {
             groups:                        ['builtin', 'external', 'internal', 'parent', 'sibling', 'index'],
             pathGroups:                    [{ pattern: 'bun:*', group: 'builtin' }],

@@ -1,0 +1,4 @@
+/** @internal */
+export const hidden = 1;
+
+export const shown = 2;

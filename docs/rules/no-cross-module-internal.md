@@ -1,111 +1,54 @@
 # Rule: `no-cross-module-internal` (`@hughescr/module-boundaries/no-cross-module-internal`)
 
-Prevents importing `@internal`-tagged exports from a different architectural module.
+Disallows importing `@internal`-tagged exports from a different module of the boundaries policy.
+
+## Configuration
+
+`defineBoundaries` enables this rule with the normalised policy as its option; see the
+[README](../../README.md#policy-reference). It uses the same scope and module classification as
+[`dependencies`](./dependencies.md): files with physical paths under `root`, minus `ignore`, in a module.
 
 ## Rule details
 
-TypeScript projects often use `/** @internal */` JSDoc tags to mark exports as
-implementation details that should not be used outside their home module. This rule
-enforces those boundaries by reporting an error whenever production code imports an
-`@internal` symbol from a module other than its own.
+`/** @internal */` marks an export as an implementation detail of its module. For each `import { … } from` and
+`export { … } from` whose source resolves to a file in a different module, the rule reports every named
+specifier whose export in that file carries an `@internal` JSDoc tag. Default and namespace imports, local
+exports and `export *` are not checked.
 
-The rule uses TypeScript's AST and JSDoc parser — not fragile regex scanning — so
-it handles re-exports, aliases, and documentation comments correctly.
+`@internal` is read the way TypeScript's JSDoc parser reads it: a JSDoc block comment attached to the exporting
+statement (not one on the same line as the end of the previous statement), with the tag starting at the start
+of a line or after whitespace. Text inside `{@link …}`, brace-enclosed JSDoc types, or optional parameter
+names and defaults is not a tag. The first top-level statement that exports a name decides it, so an overload
+signature without the tag hides a tagged implementation.
 
-### How it works
+For a re-export (`export { a as b } from './x'` or `export { a }`), the tag is read from the re-export statement
+itself, not from the original declaration. A re-export chain can therefore be cut at any level by tagging the
+re-export.
 
-1. For each import declaration, the rule determines which module the importing file
-   belongs to (via the `modules` option).
-2. TypeScript module resolution locates the actual source file being imported.
-3. The TypeScript AST is walked to find the exported declaration.
-4. `ts.getJSDocTags()` checks whether an `@internal` tag exists.
-5. An error is reported if: the importer and the imported symbol are in **different**
-   modules AND the symbol is marked `@internal`.
+## Messages
 
-The rule is a **no-op** on test files (filenames containing `.test.` or `.spec.`)
-and on files that do not belong to any configured module.
+| Message id            | Example |
+|-----------------------|---------|
+| `crossModuleInternal` | `'internalThing' is marked @internal in module 'utils' and cannot be imported from module 'app'.` |
 
 ## Examples
-
-Given this `modules` configuration:
-```js
-{
-  modules: [
-    { type: 'agent',   pattern: 'src/agent/**' },
-    { type: 'storage', pattern: 'src/storage/**' },
-  ]
-}
-```
 
 ### Incorrect
 
 ```ts
 // src/agent/some-file.ts
-import { InternalHelper } from '../storage/utils'; // @internal in storage module
+import { InternalHelper } from '@/storage';        // @internal in module storage
+export { InternalHelper as Helper } from '@/storage';
 ```
 
 ### Correct
 
 ```ts
 // src/agent/some-file.ts
-import { PublicHelper } from '@/storage'; // public barrel export — fine
-import { InternalHelper } from './internal-helper'; // same module — fine
-```
-
-## Options
-
-| Option    | Type                                                             | Default | Description                                                                                                          |
-|-----------|------------------------------------------------------------------|---------|----------------------------------------------------------------------------------------------------------------------|
-| `modules` | `Array<{ type: string; pattern: string \| string[] }>` | (required) | Module boundary definitions. Each entry maps a `type` name to a glob pattern (or array of globs) matching file paths relative to project root. |
-
-### `modules` option shape
-
-The `modules` option accepts the same `boundaryElements` array shape as
-`eslint-plugin-boundaries`. Each entry has:
-
-- `type` — A human-readable identifier for the module (used in error messages).
-- `pattern` — A picomatch glob or array of globs, matched against the file path
-  **relative to the project root** (forward-slash-separated).
-
-Example using `eslint-plugin-boundaries` `boundaryElements` directly:
-
-```js
-// eslint.config.mjs
-import moduleBoundaries from '@hughescr/eslint-plugin-module-boundaries';
-import { defineConfig } from 'eslint';
-
-const boundaryElements = [
-  { type: 'config',       pattern: 'src/config/**' },
-  { type: 'errors',       pattern: 'src/errors/**' },
-  { type: 'utils',        pattern: 'src/utils/**' },
-  { type: 'storage',      pattern: 'src/storage/**' },
-  { type: 'services',     pattern: 'src/services/**' },
-  { type: 'integrations', pattern: 'src/integrations/**' },
-  { type: 'agent',        pattern: 'src/agent/**' },
-  { type: 'app',          pattern: 'src/app/**' },
-];
-
-export default defineConfig([
-  ...moduleBoundaries.configs.recommended,
-  {
-    // Override no-cross-module-internal with your module list
-    rules: {
-      '@hughescr/module-boundaries/no-cross-module-internal': ['error', {
-        modules: boundaryElements,
-      }],
-    },
-  },
-]);
+import { PublicHelper } from '@/storage';             // not @internal
+import { InternalHelper } from './internal-helper';   // same module
 ```
 
 ## When not to use it
 
-- If your project does not use `@internal` JSDoc tags.
-- If your project has no module boundaries to enforce.
-- In test files (the rule already skips `.test.ts` and `.spec.ts` automatically).
-
-## Further reading
-
-- [JSDoc `@internal` tag](https://jsdoc.app/tags-inner.html)
-- [TypeScript project references](https://www.typescriptlang.org/docs/handbook/project-references.html)
-- [`eslint-plugin-boundaries`](https://github.com/javierbrea/eslint-plugin-boundaries) — complementary rule set for enforcing import direction
+When the project does not use `@internal` tags.

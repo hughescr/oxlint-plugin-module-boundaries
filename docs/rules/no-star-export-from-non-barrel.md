@@ -13,6 +13,9 @@ enumerated at the use site.
 This rule blocks `export *` from non-barrel files while still allowing
 `export * from './subdir'` when `./subdir/index.ts` exists
 (barrel-of-barrels pattern, enabled by default via `allowBarrelOfBarrels`).
+It applies to files named `index.ts` and resolves relative sources with
+oxc-resolver, using TypeScript's `bundler` resolution and the nearest
+`tsconfig.json` above the barrel. It takes no policy; enable it by name.
 
 ### Allowed vs. blocked
 
@@ -41,6 +44,12 @@ export * from './types'; // ERROR: types.ts is not a barrel
 export { AgentClass } from './types';   // explicit names — fine
 export * from './sub-module';           // fine when sub-module/index.ts exists
 ```
+
+## Messages
+
+| Message id          | Example |
+|---------------------|---------|
+| `starFromNonBarrel` | `export * from './star' re-exports from a non-barrel file. @internal items can leak silently. Use explicit `export { ... } from` to enumerate names, or re-export from a barrel index.ts.` |
 
 ## Options
 
