@@ -101,6 +101,28 @@ use `@typescript-eslint/parser` with `projectService: true` (or a `project` path
 - [`no-internal-in-barrel`](./docs/rules/no-internal-in-barrel.md)
 - [`no-star-export-from-non-barrel`](./docs/rules/no-star-export-from-non-barrel.md)
 
+## Development
+
+```sh
+bun install
+bun run lint
+bun run typecheck
+bun run build
+bun run test
+bun run dead-code
+bun run mutate
+```
+
+The development toolchain uses `@hughescr/oxlint-config-default` with Oxlint
+1.94.0 (`oxlint.config.ts`) and the Rust TypeScript compiler, tsrs
+0.25.0-ts7.1.0-beta. Lint runs Oxlint under Node with `--deny-warnings`, ESLint
+only for package.json (`eslint.package-json.config.mjs`), and the shared ast-grep
+rules (`sgconfig.yml`). `bun run lint:fix` fixes supported Oxlint/package.json
+findings; `bun run lint:overview` shows grouped diagnostics. Both build and
+typecheck invoke tsrs under Node; the build emits JavaScript, declarations and
+source maps in `dist/`. TypeScript and the ESLint parser/test runner remain
+installed for the existing rule implementations, tests and Stryker checker.
+
 ## License
 
 BSD-3-Clause — see [LICENSE.md](./LICENSE.md).

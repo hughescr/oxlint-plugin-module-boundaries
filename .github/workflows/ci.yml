@@ -23,7 +23,7 @@ jobs:
       - name: Run tests
         run: bun run test
 
-      - name: Full validation (lint, typecheck, mutation)
+      - name: Full validation (Oxlint, ast-grep, tsrs, mutation)
         run: bun run test:full
         env:
           STRYKER_DASHBOARD_API_KEY: ${{ secrets.STRYKER_DASHBOARD_API_KEY }}

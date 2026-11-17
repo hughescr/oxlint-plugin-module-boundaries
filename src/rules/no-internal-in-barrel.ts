@@ -31,6 +31,7 @@ export default createRule({
     },
 
     // Stryker disable next-line ArrayDeclaration -- empty default options array; rule takes no options so mutating the default is behavior-equivalent
+    // eslint-disable-next-line typescript/no-deprecated -- retain RuleCreator defaults until the separate rule API migration; this task changes only the toolchain
     defaultOptions: [],
 
     // Stryker disable all -- create() body tested via RuleTester with projectService; Bun inspector cannot map per-test coverage for .ts source files

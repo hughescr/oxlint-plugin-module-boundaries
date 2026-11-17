@@ -59,7 +59,7 @@ function hasInternalJSDocTag(node: ts.Node): boolean {
  * @returns true if the named export is marked @internal.
  */
 // Stryker disable all -- isExportInternal tested via direct unit tests; Bun's perTest inspector cannot map TypeScript source lines to specific it() tests when TypeScript compiler APIs are involved
-// eslint-disable-next-line sonarjs/cognitive-complexity, complexity -- ESLint rule walks TypeScript AST; branching is inherent to handling multiple declaration kinds
+// eslint-disable-next-line complexity -- ESLint rule walks TypeScript AST; branching is inherent to handling multiple declaration kinds
 export function isExportInternal(sourceFile: ts.SourceFile, exportedName: string): boolean {
     for(const statement of sourceFile.statements) {
         // ── VariableStatement: export const foo = ... ──────────────────────────────────

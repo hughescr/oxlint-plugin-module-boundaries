@@ -111,6 +111,7 @@ export default createRule({
     },
 
     // Stryker disable next-line ArrayDeclaration -- empty default options; rule takes no structured defaults so array mutation is behavior-equivalent
+    // eslint-disable-next-line typescript/no-deprecated -- retain RuleCreator defaults until the separate rule API migration; this task changes only the toolchain
     defaultOptions: [] as [{ modules?: ModuleEntry[] }?],
 
     // Stryker disable all -- create() body tested via RuleTester with projectService; Bun inspector cannot map per-test coverage for .ts source files
@@ -172,7 +173,7 @@ export default createRule({
 
                 // Check each imported specifier
                 for(const specifier of node.specifiers) {
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison -- ESTree node type is a string enum; comparison to literal is the standard ESLint pattern
+                    // eslint-disable-next-line typescript/no-unsafe-enum-comparison -- ESTree node type is a string enum; comparison to literal is the standard ESLint pattern
                     if(specifier.type !== 'ImportSpecifier') {
                         continue;
                     }

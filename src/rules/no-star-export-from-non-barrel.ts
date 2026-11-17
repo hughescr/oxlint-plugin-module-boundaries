@@ -45,6 +45,7 @@ export default createRule({
     },
 
     // Stryker disable next-line BooleanLiteral -- default true is the live value; mutating to false is a behavior change but only in the schema default, not in runtime logic (defaultOptions covers runtime)
+    // eslint-disable-next-line typescript/no-deprecated -- retain RuleCreator defaults until the separate rule API migration; this task changes only the toolchain
     defaultOptions: [{ allowBarrelOfBarrels: true }] as [{ allowBarrelOfBarrels?: boolean }],
 
     // Stryker disable all -- create() body tested via RuleTester with projectService; Bun inspector cannot map per-test coverage for .ts source files
@@ -66,7 +67,7 @@ export default createRule({
         const compilerOptions = program.getCompilerOptions();
 
         // Read option — default true
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- defensive guard; options[0] should always be set by defaultOptions but RuleTester can call create() before defaultOptions are applied
+        // eslint-disable-next-line typescript/no-unnecessary-condition -- defensive guard; options[0] should always be set by defaultOptions but RuleTester can call create() before defaultOptions are applied
         const allowBarrelOfBarrels = context.options[0]?.allowBarrelOfBarrels !== false;
 
         return {
