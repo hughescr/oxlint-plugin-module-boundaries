@@ -34,7 +34,7 @@ describe('no-cross-module-internal — meta', () => {
             type: 'problem',
             docs: {
                 description: 'Disallow importing @internal exports from a different module of the boundaries policy',
-                url:         'https://github.com/hughescr/eslint-plugin-module-boundaries/blob/main/docs/rules/no-cross-module-internal.md',
+                url:         'https://github.com/hughescr/oxlint-plugin-module-boundaries/blob/main/docs/rules/no-cross-module-internal.md',
             },
             messages: {
                 crossModuleInternal: "'{{name}}' is marked @internal in module '{{sourceModule}}' and cannot be imported from module '{{importerModule}}'.",

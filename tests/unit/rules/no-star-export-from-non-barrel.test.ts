@@ -24,7 +24,7 @@ describe('no-star-export-from-non-barrel — meta', () => {
             type: 'problem',
             docs: {
                 description: 'Disallow barrel index.ts files from using export * from non-barrel files',
-                url:         'https://github.com/hughescr/eslint-plugin-module-boundaries/blob/main/docs/rules/no-star-export-from-non-barrel.md',
+                url:         'https://github.com/hughescr/oxlint-plugin-module-boundaries/blob/main/docs/rules/no-star-export-from-non-barrel.md',
             },
             messages: {
                 starFromNonBarrel: "export * from '{{source}}' re-exports from a non-barrel file. @internal items can leak silently. Use explicit `export { ... } from` to enumerate names, or re-export from a barrel index.ts.",

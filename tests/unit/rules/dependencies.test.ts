@@ -33,7 +33,7 @@ describe('dependencies — meta', () => {
             type: 'problem',
             docs: {
                 description: 'Enforce the boundaries policy: allowed module edges, type-only edges and module entry files',
-                url:         'https://github.com/hughescr/eslint-plugin-module-boundaries/blob/main/docs/rules/dependencies.md',
+                url:         'https://github.com/hughescr/oxlint-plugin-module-boundaries/blob/main/docs/rules/dependencies.md',
             },
             messages: {
                 unassigned: "'{{file}}' is in no module of the boundaries policy; add it to a module or narrow `include`.",

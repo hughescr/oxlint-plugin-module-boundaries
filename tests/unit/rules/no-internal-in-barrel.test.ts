@@ -31,7 +31,7 @@ describe('no-internal-in-barrel — meta', () => {
             type: 'problem',
             docs: {
                 description: 'Disallow barrel index.ts files from re-exporting @internal-tagged exports',
-                url:         'https://github.com/hughescr/eslint-plugin-module-boundaries/blob/main/docs/rules/no-internal-in-barrel.md',
+                url:         'https://github.com/hughescr/oxlint-plugin-module-boundaries/blob/main/docs/rules/no-internal-in-barrel.md',
             },
             messages: { internalInBarrel: "'{{name}}' is marked @internal and must not be re-exported from a barrel index.ts." },
             schema:   [],

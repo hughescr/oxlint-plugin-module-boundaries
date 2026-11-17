@@ -17,7 +17,7 @@
   "author": "Craig Hughes <craig.npm@rungie.com>",
   "repository": {
     "type": "git",
-    "url": "git://github.com/hughescr/eslint-plugin-module-boundaries.git"
+    "url": "git://github.com/hughescr/oxlint-plugin-module-boundaries.git"
   },
   "type": "module",
   "main": "./dist/index.js",

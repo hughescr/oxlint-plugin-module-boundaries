@@ -6,8 +6,8 @@
 scope with public access. A project writes one policy file with `defineBoundaries(policy)` and extends the
 fragment it returns; the plugin then enforces allowed module edges, type-only edges, module entry files and
 `@internal` exports. It needs no TypeScript program: oxc-resolver resolves imports and oxc-parser parses
-target files. Licensed under BSD-3-Clause. The GitHub repository keeps its old name,
-`hughescr/eslint-plugin-module-boundaries`.
+target files. Licensed under BSD-3-Clause. The GitHub repository is
+`hughescr/oxlint-plugin-module-boundaries`.
 
 TypeScript source in `src/` is built to `dist/` via `node node_modules/tsrs/bin/tsrs -p tsconfig.build.json`.
 The `prepublishOnly` hook runs the build automatically on publish.

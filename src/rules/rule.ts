@@ -40,5 +40,5 @@ export interface RuleModule {
  * @returns The URL.
  */
 export function docsUrl(name: string): string {
-    return `https://github.com/hughescr/eslint-plugin-module-boundaries/blob/main/docs/rules/${name}.md`;
+    return `https://github.com/hughescr/oxlint-plugin-module-boundaries/blob/main/docs/rules/${name}.md`;
 }
